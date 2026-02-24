@@ -51,7 +51,7 @@ def evaluate_detection(
     Returns:
         dict with keys:
             "map"           : overall mAP@0.5 (float)
-            "map_per_class" : per-class AP tensor
+            "map_per_class" : per-class AP as a list
             "raw"           : full torchmetrics output dict
     """
     # Apply NMS and build torchmetrics input format
@@ -66,20 +66,17 @@ def evaluate_detection(
     metric.update(preds, targets)
     result = metric.compute()
 
-    map_score     = float(result["map"])
-    raw_per_class = result["map_per_class"]
-    # torchmetrics sometimes returns a scalar instead of a tensor when
-    # per-class AP cannot be computed — convert safely to list
-    if hasattr(raw_per_class, "tolist"):
-        map_per_class = raw_per_class.tolist()
+    map_score = float(result["map"])
+
+    # torchmetrics can return either a tensor or a scalar float for map_per_class
+    # depending on the version and whether per-class AP could be computed.
+    # We convert everything to a plain Python list to be safe.
+    raw = result["map_per_class"]
+    if hasattr(raw, "tolist"):
+        converted = raw.tolist()
     else:
-        map_per_class = [float(raw_per_class)]
-    # torchmetrics sometimes returns a scalar instead of a tensor when
-    # per-class AP cannot be computed — convert safely to list
-    if hasattr(raw_per_class, "tolist"):
-        map_per_class = raw_per_class.tolist()
-    else:
-        map_per_class = [float(raw_per_class)]
+        converted = float(raw)
+    map_per_class = converted if isinstance(converted, list) else [converted]
 
     if verbose:
         print(f"\n{'='*40}")
@@ -98,3 +95,5 @@ def evaluate_detection(
         "map_per_class": map_per_class,
         "raw":           result,
     }
+
+#corrected
