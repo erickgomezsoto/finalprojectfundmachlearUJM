@@ -1,0 +1,9 @@
+Total images   : 4819
+has car        : 2706    (56.2%)
+has person     : 3799 (78.8%)
+has truck        : 2088    (43.3%)
+
+Total regions  : 31548
+  person     : 17954 (56.9%)
+  car        : 10196 (32.3%)
+  truck      : 3398 (10.8%)

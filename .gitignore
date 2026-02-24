@@ -1,0 +1,26 @@
+# large data files — shared via Google Drive instead
+coco_filtered/images/
+coco_filtered/features_train.npz
+coco_filtered/features_val.npz
+coco2017/
+
+# instructor only files
+task1_complete.py
+step1_scan_coco.py
+step2_sample_and_export.py
+cocodown.sh
+coco_scan.csv
+
+# outputs
+outputs/
+
+# python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# editor and OS files
+.DS_Store
+.venv/
+*.egg-info/
