@@ -212,13 +212,14 @@ def main():
         detection_results = evaluate_detection(preds_df, ground_truth_df, verbose=True)
 
         # store results for compare.py
+        per_class = detection_results["map_per_class"]
         results[model_name] = {
             "fg_macro_f1": round(fg_macro_f1, 4),
             "map":         round(detection_results["map"], 4),
             "map_per_class": {
-                "person": round(detection_results["map_per_class"][0], 4),
-                "car":    round(detection_results["map_per_class"][1], 4),
-                "truck":  round(detection_results["map_per_class"][2], 4),
+                "person": round(per_class[0], 4) if len(per_class) > 0 else float("nan"),
+                "car":    round(per_class[1], 4) if len(per_class) > 1 else float("nan"),
+                "truck":  round(per_class[2], 4) if len(per_class) > 2 else float("nan"),
             }
         }
 
