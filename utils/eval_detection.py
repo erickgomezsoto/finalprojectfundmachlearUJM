@@ -66,8 +66,20 @@ def evaluate_detection(
     metric.update(preds, targets)
     result = metric.compute()
 
-    map_score      = float(result["map"])
-    map_per_class  = result["map_per_class"].tolist()
+    map_score     = float(result["map"])
+    raw_per_class = result["map_per_class"]
+    # torchmetrics sometimes returns a scalar instead of a tensor when
+    # per-class AP cannot be computed — convert safely to list
+    if hasattr(raw_per_class, "tolist"):
+        map_per_class = raw_per_class.tolist()
+    else:
+        map_per_class = [float(raw_per_class)]
+    # torchmetrics sometimes returns a scalar instead of a tensor when
+    # per-class AP cannot be computed — convert safely to list
+    if hasattr(raw_per_class, "tolist"):
+        map_per_class = raw_per_class.tolist()
+    else:
+        map_per_class = [float(raw_per_class)]
 
     if verbose:
         print(f"\n{'='*40}")

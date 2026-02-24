@@ -46,3 +46,5 @@ torchenv/
 *.egg-info/
 .idea/
 .vscode/
+coco_filtered/features_train.z*
+coco_filtered/features_train.zip
