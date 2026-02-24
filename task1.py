@@ -95,14 +95,22 @@ def build_predictions_df(image_ids, boxes, y_pred, confidence, y_true):
     })
 
 
-def build_ground_truth_df(regions_csv):
-    """Load ground truth boxes from regions.csv (foreground only)."""
+def build_ground_truth_df(regions_csv, image_ids=None):
+    """
+    Load ground truth boxes from regions.csv (foreground only).
+    Pass image_ids to restrict to a specific set of images — always pass
+    ids_val here to avoid comparing predictions against images not in the
+    validation set.
+    """
     label_map = {"person": 1, "car": 2, "truck": 3}
     df = pd.read_csv(regions_csv)
     df["class_label"] = df["class_label"].map(label_map)
     df = df.dropna(subset=["class_label"])
     df["class_label"] = df["class_label"].astype(int)
-    return df[["image_id", "x1", "y1", "x2", "y2", "class_label"]]
+    df = df[["image_id", "x1", "y1", "x2", "y2", "class_label"]]
+    if image_ids is not None:
+        df = df[df["image_id"].isin(image_ids)]
+    return df
 
 
 def main():
@@ -120,7 +128,8 @@ def main():
     print("Loading features...")
     X_train, y_train, _,          _       = load_features(data_dir / "features_train.npz")
     X_val,   y_val,   boxes_val,  ids_val = load_features(data_dir / "features_val.npz")
-    ground_truth_df = build_ground_truth_df(data_dir / "regions.csv")
+    ground_truth_df = build_ground_truth_df(data_dir / "regions.csv", image_ids=set(ids_val.tolist()))
+
 
     print(f"  Train: {X_train.shape[0]} regions | Val: {X_val.shape[0]} regions")
 
@@ -131,7 +140,7 @@ def main():
             print(f"    {LABEL_NAMES[u]:<12}: {c:>8} ({100*c/len(y):.1f}%)")
 
     # ------------------------------------------------------------------ #
-    # TODO: train your classifiers here                                   #
+    # T O D O: train your classifiers here                                   #
     # ------------------------------------------------------------------ #
     #
     # (a) Multiclass SVM with a linear kernel:
@@ -221,3 +230,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# corrected
