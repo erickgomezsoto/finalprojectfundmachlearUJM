@@ -62,7 +62,7 @@ def evaluate_detection(
     )
 
     # Compute mAP
-    metric = MeanAveragePrecision(iou_thresholds=[iou_threshold])
+    metric = MeanAveragePrecision(iou_thresholds=[iou_threshold], class_metrics=True)
     metric.update(preds, targets)
     result = metric.compute()
 
